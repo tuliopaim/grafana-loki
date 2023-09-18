@@ -22,7 +22,7 @@ app.MapGet("/", ([FromServices]ILogger<Program> logger) =>
 
     logger.LogInformation("Hello World! {CurrentUserId}", currentUserId);
 
-    return Results.Ok();
+    return Results.Ok(new { currentUserId });
 });
 
 app.MapPost("/", (
@@ -34,7 +34,29 @@ app.MapPost("/", (
     logger.LogInformation(
         "User {CurrentUserId} sent @{Body}", currentUserId, body);
 
-    return Results.Ok();
+    return Results.Ok(new 
+    {
+        currentUserId,
+        body
+    });
+});
+
+app.MapGet("log-error/{errorMessage}", (
+    string errorMessage,
+    [FromServices]ILogger<Program> logger) =>
+{
+    var currentUserId = Guid.NewGuid();
+
+    logger.LogError(
+        "Error captured, {CurrentUserId}: {ErrorMessage}",
+        currentUserId,
+        errorMessage);
+
+    return Results.BadRequest(new 
+    {
+        currentUserId,
+        errorMessage,
+    });
 });
 
 app.MapGet("/divide/{num1}/{num2}", (
@@ -56,9 +78,10 @@ app.MapGet("/divide/{num1}/{num2}", (
 
         return Results.Ok(result);
     }
-    catch (DivideByZeroException)
+    catch (DivideByZeroException ex)
     {
         logger.LogError(
+            ex,
             "{CurrentUserId} trying to divide by 0",
             currentUserId);
 
