@@ -2,7 +2,8 @@
 
 networks:
   loki:
-    
+
+
 services:
   api:
     image: grafanaloki
@@ -10,12 +11,12 @@ services:
       context: .
       dockerfile: GrafanaLoki/Dockerfile
     ports:
-        - "5000:5000"
+      - "5000:5000"
     environment:
       ASPNETCORE_URLS: http://+:5000
       ASPNETCORE_ENVIRONMENT: Development
     networks:
-        - loki
+      - loki
 
   loki:
     image: grafana/loki
